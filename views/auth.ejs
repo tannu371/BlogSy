@@ -1,0 +1,54 @@
+<%- include("partials/header.ejs") %>
+
+    <div class="auth">
+
+        <div class="left">
+            <h1>Welcome!</h1>
+            <img src="images/welcome.jpg" height="300px" alt="">
+        </div>
+
+
+        <form onsubmit="return validatePasswords()" action="/" method="POST">
+            <div>
+                <label for="image"> <img src="images/photo.jpg" height="60px" width="60px" onchange="readURL(this);"> </label>
+                <input type="file" id="image" accept="image/*" style="display: none;">
+            </div>
+
+            <div class="hi">
+                <label>Username</label>
+                <input type="text" name="username" placeholder="chinchinati34" required>
+            </div>
+
+            <div class="hi">
+                <label>Email</label>
+                <input type="email" name="email" placeholder="user@example.com" required>
+            </div>
+
+            <div>
+                <label>Password</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+
+            <div>
+                <label>Re-type Password</label>
+                <input type="password" id="confirmPassword" name="confirmPassword" required>
+            </div>
+
+            <p id="message" style="color: red;"></p>
+
+            <div>
+                <button>SignIn</button>
+            </div>
+        </form>
+
+
+
+    </div>
+
+
+
+
+
+
+
+    <%- include("partials/footer.ejs") %>

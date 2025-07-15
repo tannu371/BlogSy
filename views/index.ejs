@@ -1,0 +1,49 @@
+<%- include("partials/header.ejs") %>
+
+    <div class="page">
+
+        <div class=side-bar>
+            <a href=""> <img src="images/girl.jpg" height="80px"> </a> <br>
+
+            <% if(locals.username) { %>
+                <p>
+                    <%= username %>
+                </p>
+           <% } %>  
+
+            <a href="/auth">SignUp</a> <br>
+            <a href="/myblog">My Blogs</a> <br>
+            <a href="/saved">Saved</a> <br>
+            <a href="/create">Create</a> <br>
+
+        </div>
+
+        <div class="blogs">
+            <div>
+                <img src="images/food.jpg">
+                <h2>Fork & Flavor: Where Every Meal Tells a Story</h2>
+                <p>Welcome to Fork & Flavor, where food isn’t just about ingredients — it’s about memories, culture, and connection. Every
+                recipe here comes with a story: from cherished family traditions passed down through generations to spontaneous kitchen
+                experiments that turned into favorites. Whether you're a seasoned home cook or just starting out, you'll find dishes
+                that not only satisfy your taste buds but also warm your heart. So grab your fork, dive into flavor, and join me on a
+                journey where every meal has a tale to tell.</p>
+            </div>
+            <div> 
+                <img src="images/travel.jpg">
+                <h2>Wander & Wonder: Stories from Every Stop</h2>
+                <p>Welcome to Wander & Wonder, where every journey becomes a story and every destination sparks a sense of awe. This blog
+                is a passport to my adventures — from bustling city streets and hidden mountain trails to quiet coastal towns and
+                vibrant local markets. Through stories, photos, and personal insights, I hope to inspire you to see the world not just
+                as a map to conquer, but as a collection of moments to feel, flavors to taste, and people to meet. Let’s wander with
+                open hearts and wonder in our eyes — one stop at a time.</p>
+            </div>
+            <div> c3 </div>
+            <div> </div>
+            <div> In My </div>
+            <div> I ❤️ Travel </div>
+            <div> Cultre & Society </div>
+        </div>
+
+    </div>
+
+    <%- include("partials/footer.ejs") %>
