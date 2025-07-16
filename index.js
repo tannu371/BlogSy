@@ -16,10 +16,14 @@ app.get("/auth", (req, res) => {
 });
 
 app.post("/", (req, res) => {
-    console.log(req.body)
+  console.log(req.body)
   const data = {
     username: req.body["username"],
+    title: req.body["title"],
+    content: req.body["content"],
+    imgURL: req.body["img"],
   }
+  
   res.render("index.ejs", data);
 });
 

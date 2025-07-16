@@ -1,22 +1,10 @@
 $("input[type='password']").click(() => {
-  $("form img").attr("src", "images/cover.png");
+  $(".left img").attr("src", "images/cover.png");
 });
 
 $(".hi").click(() => {
-  $("form img").attr("src", "images/welcome.jpg");
+  $(".left img").attr("src", "images/welcome.jpg");
 });
-
-function readURL(event) {
-  if (input.files && input.files[0]) {
-    var reader = new FileReader();
-
-    reader.onload = function (e) {
-      $('form img').attr('src', e.target.result).width(150).height(200);
-    };
-
-    reader.readAsDataURL(input.files[0]);
-  }
-}
 
 function validatePasswords() {
   const password = document.getElementById("password").value;
@@ -33,6 +21,17 @@ function validatePasswords() {
   return true;
 }
 
+function renderImg(event) {
+  const file = event.target.files && event.target.files[0];
+  if (!file) {
+    console.warn("No file selected.");
+    return;
+  }
 
+  const reader = new FileReader();
+  reader.onload = () => {
+    $("#outputImg").attr("src", reader.result);
+  };
 
-
+  reader.readAsDataURL(file);
+}

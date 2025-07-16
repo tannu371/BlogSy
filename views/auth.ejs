@@ -9,32 +9,32 @@
 
 
         <form onsubmit="return validatePasswords()" action="/" method="POST">
-            <div>
-                <label for="image"> <img src="images/photo.jpg" height="60px" width="60px" onchange="readURL(this);"> </label>
-                <input type="file" id="image" accept="image/*" style="display: none;">
+            <div class="hi">
+                <label for="imageInp"> <img id="outputImg" src="images/photo.jpg" height="70px" widht="70px"> </label>
+                <input id="imageInp" type="file" name="profile" accept="image/*" style="display: none;">
             </div>
 
             <div class="hi">
-                <label>Username</label>
+                <label>Username</label> <br />
                 <input type="text" name="username" placeholder="chinchinati34" required>
             </div>
 
             <div class="hi">
-                <label>Email</label>
+                <label>Email</label> <br />
                 <input type="email" name="email" placeholder="user@example.com" required>
             </div>
 
             <div>
-                <label>Password</label>
+                <label>Password</label> <br />
                 <input type="password" id="password" name="password" required>
             </div>
 
             <div>
-                <label>Re-type Password</label>
+                <label>Re-type Password</label> <br />
                 <input type="password" id="confirmPassword" name="confirmPassword" required>
             </div>
 
-            <p id="message" style="color: red;"></p>
+            <p id="message"></p> <br />
 
             <div>
                 <button>SignIn</button>
