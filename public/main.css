@@ -148,11 +148,12 @@ h2 {
   margin-right: 30px;
 }
 
+
 .blogs button {
   background-color: #E9DEC3;
   border: #f8f8e1;
   padding: 5px 10px;
-  justify-self: flex-end;
+  margin-top: 20px;
 }
 
 .create {
