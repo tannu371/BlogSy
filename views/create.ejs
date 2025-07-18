@@ -1,31 +1,31 @@
 <%- include("partials/header.ejs") %>
 
-    <%- include("partials/side-bar.ejs") %>
+    <div class="create">
+        <% if(locals.blog) { %>
+            <form action="/edit/<%= blog.id %>" method="post">
 
-    
+                <input id="title-input" type="text" name="title" value="<%= blog.title %>"> <br>
 
-        <div class="create">
+                <label for="imageInp"> <img id="outputImg" src= <%= blog.image %> height="200" width="300"> </label>
+                <input id="imageInp" type="file" name="image" accept="image/*" style="display: none;"
+                    onchange="renderImg(event)"> <br>
 
-            <form action="/" method="post">
-                <input class="title" type="text" name="title" placeholder="Blog Title" required style="width: 100%;">
+                <textarea name="description"> <%= blog.description %>
+                                        </textarea> <br>
+                <%} else {%>
+                    <form action="/create" method="post">
+                        <input id="title-input" type="text" name="title" placeholder="Title Goes Here!" required> <br>
+                        <label for="imageInp"> <img id="outputImg" src="images/image-upload.png" height="200"> </label>
+                        <input id="imageInp" type="file" name="image" accept="image/*" style="display: none;"
+                            onchange="renderImg(event)"> <br>
 
-                <label for="imageInp"> <img id="outputImg" height="200" width="300"> </label>
-                <input id="imageInp" type="file" name="image" accept="image/*" style="display: none;"> 
+                        <textarea name="description" id="text-area">Write your thoughts here...
+                                        </textarea> <br>
+                        <% } %>
 
-                <br>
+                            <input id="publish_btn" type="submit" value="PUBLISH!">
 
-                <textarea name="content">
-                    </textarea> <br>
+                    </form>
+    </div>
 
-
-                <button>Create</button>
-
-            </form>
-        </div>
-
-
-
-
-        </div>
-
-        <%- include("partials/footer.ejs") %>
+    <%- include("partials/footer.ejs") %>

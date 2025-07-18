@@ -9,15 +9,42 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Caveat:wght@400..700&family=Merienda:wght@300..900&display=swap"
         rel="stylesheet">
-    <link rel="stylesheet" href="main.css">
-    <title>Personal Blog</title>
+    <link rel="stylesheet" href="/main.css">
+    <title>Blog</title>
 </head>
 
 <body>
     <main>
-        <div class="header">
-            <div class="brand">
-                <img src="images/flower.png" height="70px" widht="70px">
-                <h1>Vivantory</h1>
+        <div id="header">
+            <div id="logo">
+                <svg height="60px" width="60px" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg"
+                    xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 290.873 290.873" xml:space="preserve">
+                    <g>
+                        <polygon style="fill:#3A86FF;"
+                            points="44.268,139.532 44.268,79.35 44.268,41.049 93.507,90.294 	" />
+                        <polygon style="fill:#FFBE0B;" points="0,73.384 32.334,41.049 32.334,73.384 	" />
+                        <polygon style="fill:#FB5607;" points="149.583,249.824 113.508,213.748 149.583,181.843 	" />
+                        <polygon style="fill:blue;"
+                            points="103.066,202.799 47.216,153.823 160.968,48.77 290.873,48.77 	" />
+                    </g>
+                </svg>
+                <h1><a href="/"> Vivantory </a></h1>
+            </div>
+            <div class="nav-links">
+                <a href="/create" id="create-link">Create Blog</a>
+                <a href="/saved">Saved Blog</a>                
+                <% if(locals.user) { %>
+                    <label for="imageInp"> <img src="<%= user.profile %>" height="70px" widht="70px"> </label>
+                    <input id="imageInp" type="file" name="profile" accept="image/*" style="display: none;">
+                    <p style="text-align:center;">
+                        <a href="/<%=  user.username %>" id="username">
+                            <%= user.username %>
+                        </a>
+                    </p>
+                    <a href="/">LogOut</a>
+                    <% } else { %>
+                        <a href="/logIn">LogIn</a>
+                        <% } %>
             </div>
         </div>
+        <p style="color: red; text-align:center" id="create-msg"></p>

@@ -4,14 +4,14 @@
 
         <div class="left">
             <h1>Welcome!</h1>
-            <img src="images/welcome.jpg" height="300px" alt="">
+            <img src="images/welcome.png" height="300px" alt="">
         </div>
 
 
-        <form onsubmit="return validatePasswords()" action="/" method="POST">
+        <form onsubmit="return validatePasswords()" action="/submit" method="POST">
             <div class="hi">
                 <label for="imageInp"> <img id="outputImg" src="images/photo.jpg" height="70px" widht="70px"> </label>
-                <input id="imageInp" type="file" name="profile" accept="image/*" style="display: none;">
+                <input id="imageInp" type="file" name="profile" accept="image/*" style="display: none;" onchange="renderImg(event)">
             </div>
 
             <div class="hi">
@@ -34,21 +34,17 @@
                 <input type="password" id="confirmPassword" name="confirmPassword" required>
             </div>
 
-            <p id="message"></p> <br />
+            <p id="message" style="color:red;"></p> <br />
 
             <div>
                 <button>SignIn</button>
             </div>
+
+            <a href="/logIn">Already have an account?</a>
         </form>
 
 
 
     </div>
-
-
-
-
-
-
 
     <%- include("partials/footer.ejs") %>

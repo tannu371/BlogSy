@@ -1,162 +1,84 @@
 <%- include("partials/header.ejs") %>
+    <div class="blogs">
 
-    <%- include("partials/side-bar.ejs") %>
-        <div class="blogs">
-
-            <% if(locals.title) { %>
-
-                <div>
+        <% if(blogList.length> 0) { %>
+            <% for (var i=0; i<blogList.length; i++) { %>
+                <div class="blog-card">
                     <a>
-                        <img>
-                    </a>
-                    <a>
-                        <h2>
-                            <%= title %>
-                        </h2>
+                        <img src=<%=blogList[i].image %>>
                     </a>
 
-                    <p><%= new Date() %></p>
-                    
+                    <h2>
+                        <a href="/blog/<%= blogList[i].id %>">
+                            <%= blogList[i].title %>
+                        </a>
+                    </h2>
+                    <p style="color:grey">
+                        <%= blogList[i].time %>
+                    </p>
+
                     <p>
-                        <%= content %></p>
+                        <% if(blogList[i].description.length> 200) { %>
+                            <%= blogList[i].description.slice(0,200) %>.........
+                                <% } else { %>
+                                    <%= blogList[i].description %>
+                                        <% } %>
+                    </p>
+                    <div class="btn">
 
-                        <button>Edit</button> <button>Delete</button>
+                            <a href="/save/<%= blogList[i].id %>">
+                                <svg width="30px" height="30px" viewBox="0 0 24 24" fill="none"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <path
+                                        d="M2 9.1371C2 14 6.01943 16.5914 8.96173 18.9109C10 19.7294 11 20.5 12 20.5C13 20.5 14 19.7294 15.0383 18.9109C17.9806 16.5914 22 14 22 9.1371C22 4.27416 16.4998 0.825464 12 5.50063C7.50016 0.825464 2 4.27416 2 9.1371Z"
+                                        fill="black" />
+                                </svg>
+                            </a>
 
+                    <% if(locals.user) { %>
+                        
+
+                            <% if(locals.user.username===blogList[i].username) { %>
+                                <a href="/edit/<%= blogList[i].id %>">
+                                    <svg width="30px" height="30px" viewBox="0 -0.5 21 21" version="1.1"
+                                        xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+
+                                        <title>edit_fill [#1480]</title>
+                                        <desc>Created with Sketch.</desc>
+                                        <defs>
+
+                                        </defs>
+                                        <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                                            <g id="Dribbble-Light-Preview"
+                                                transform="translate(-59.000000, -400.000000)" fill="#000000">
+                                                <g id="icons" transform="translate(56.000000, 160.000000)">
+                                                    <path
+                                                        d="M3,260 L24,260 L24,258.010742 L3,258.010742 L3,260 Z M13.3341,254.032226 L9.3,254.032226 L9.3,249.950269 L19.63095,240 L24,244.115775 L13.3341,254.032226 Z"
+                                                        id="edit_fill-[#1480]" fill="blue">
+
+                                                    </path>
+                                                </g>
+                                            </g>
+                                        </g>
+                                    </svg>
+
+                                </a>
+                                </form>
+                                <form action="/delete/<%= blogList[i].id %>" method="post">
+                                    <button id="delete-btn"><svg fill="#000000" width="30px" height="30px"
+                                            viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                            <path
+                                                d="M5.755,20.283,4,8H20L18.245,20.283A2,2,0,0,1,16.265,22H7.735A2,2,0,0,1,5.755,20.283ZM21,4H16V3a1,1,0,0,0-1-1H9A1,1,0,0,0,8,3V4H3A1,1,0,0,0,3,6H21a1,1,0,0,0,0-2Z"
+                                                fill="red" />
+                                        </svg></button>
+                                </form>
+                                <% } %>
+                        
+                        <% } %>
+                        </div>
                 </div>
-                
-
                 <% } %>
 
-
-
-                    <div>
-                        <a>
-                            <img src="images/food.jpg">
-                        </a>
-
-                        <a>
-                            <h2>Fork & Flavor: Where Every Meal Tells a Story</h2>
-                        </a>
-
-                        <p> 21 December 2025 </p>
-
-                        <p>Welcome to Fork & Flavor, where food isn’t just about ingredients — it’s about memories,
-                            culture, and
-                            connection. Every
-                            recipe here comes with a story: from cherished family traditions passed down through
-                            generations to
-                            spontaneous kitchen
-                            experiments that turned into favorites. Whether you're a seasoned home cook or just starting
-                            out,
-                            you'll find dishes
-                            that not only satisfy your taste buds but also warm your heart. So grab your fork, dive into
-                            flavor,
-                            and join me on a
-                            journey where every meal has a tale to tell.</p>
-
-                    </div>
-                    <div>
-                        <img src="images/travel.jpg">
-                        <h2>Wander & Wonder: Stories from Every Stop</h2>
-                        <p>Welcome to Wander & Wonder, where every journey becomes a story and every destination sparks
-                            a sense
-                            of awe. This blog
-                            is a passport to my adventures — from bustling city streets and hidden mountain trails to
-                            quiet
-                            coastal towns and
-                            vibrant local markets. Through stories, photos, and personal insights, I hope to inspire you
-                            to see
-                            the world not just
-                            as a map to conquer, but as a collection of moments to feel, flavors to taste, and people to
-                            meet.
-                            Let’s wander with
-                            open hearts and wonder in our eyes — one stop at a time.</p>
-                    </div>
-                    <div> <img src="images/travel.jpg">
-                        <h2>Wander & Wonder: Stories from Every Stop</h2>
-                        <p>Welcome to Wander & Wonder, where every journey becomes a story and every destination sparks
-                            a sense
-                            of awe. This blog
-                            is a passport to my adventures — from bustling city streets and hidden mountain trails to
-                            quiet
-                            coastal towns and
-                            vibrant local markets. Through stories, photos, and personal insights, I hope to inspire you
-                            to see
-                            the world not just
-                            as a map to conquer, but as a collection of moments to feel, flavors to taste, and people to
-                            meet.
-                            Let’s wander with
-                            open hearts and wonder in our eyes — one stop at a time.</p>
-                    </div>
-                    <div> <img src="images/travel.jpg">
-                        <h2>Wander & Wonder: Stories from Every Stop</h2>
-                        <p>Welcome to Wander & Wonder, where every journey becomes a story and every destination sparks
-                            a sense
-                            of awe. This blog
-                            is a passport to my adventures — from bustling city streets and hidden mountain trails to
-                            quiet
-                            coastal towns and
-                            vibrant local markets. Through stories, photos, and personal insights, I hope to inspire you
-                            to see
-                            the world not just
-                            as a map to conquer, but as a collection of moments to feel, flavors to taste, and people to
-                            meet.
-                            Let’s wander with
-                            open hearts and wonder in our eyes — one stop at a time.</p>
-                    </div>
-                    <div> <img src="images/travel.jpg">
-                        <h2>Wander & Wonder: Stories from Every Stop</h2>
-                        <p>Welcome to Wander & Wonder, where every journey becomes a story and every destination sparks
-                            a sense
-                            of awe. This blog
-                            is a passport to my adventures — from bustling city streets and hidden mountain trails to
-                            quiet
-                            coastal towns and
-                            vibrant local markets. Through stories, photos, and personal insights, I hope to inspire you
-                            to see
-                            the world not just
-                            as a map to conquer, but as a collection of moments to feel, flavors to taste, and people to
-                            meet.
-                            Let’s wander with
-                            open hearts and wonder in our eyes — one stop at a time.</p>
-                    </div>
-                    <div> <img src="images/travel.jpg">
-                        <h2>Wander & Wonder: Stories from Every Stop</h2>
-                        <p>Welcome to Wander & Wonder, where every journey becomes a story and every destination sparks
-                            a sense
-                            of awe. This blog
-                            is a passport to my adventures — from bustling city streets and hidden mountain trails to
-                            quiet
-                            coastal towns and
-                            vibrant local markets. Through stories, photos, and personal insights, I hope to inspire you
-                            to see
-                            the world not just
-                            as a map to conquer, but as a collection of moments to feel, flavors to taste, and people to
-                            meet.
-                            Let’s wander with
-                            open hearts and wonder in our eyes — one stop at a time.</p>
-                    </div>
-                    <div> <img src="images/travel.jpg">
-                        <h2>Wander & Wonder: Stories from Every Stop</h2>
-                        <p>Welcome to Wander & Wonder, where every journey becomes a story and every destination sparks
-                            a sense
-                            of awe. This blog
-                            is a passport to my adventures — from bustling city streets and hidden mountain trails to
-                            quiet
-                            coastal towns and
-                            vibrant local markets. Through stories, photos, and personal insights, I hope to inspire you
-                            to see
-                            the world not just
-                            as a map to conquer, but as a collection of moments to feel, flavors to taste, and people to
-                            meet.
-                            Let’s wander with
-                            open hearts and wonder in our eyes — one stop at a time.</p>
-                    </div>
-
-
-
-        </div>
-
-        </div>
-
-        <%- include("partials/footer.ejs") %>
+                    <% }%>
+    </div>
+    <%- include("partials/footer.ejs") %>

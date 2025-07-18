@@ -1,0 +1,36 @@
+<%- include("partials/header.ejs") %>
+
+    <div class="auth">
+        <div class="left">
+            <h1>Welcome Back!</h1>
+            <img src="images/welcome.png" height="300px" alt="">
+        </div>
+
+
+        <form action="/" method="POST">
+
+            <div class="hi">
+                <label>Username</label> <br />
+                <input type="text" name="username" placeholder="chinchinati34" required>
+            </div>
+
+            <div>
+                <label>Password</label> <br />
+                <input type="password" id="password" name="password" required>
+            </div>
+
+            <p id="message" style="color:red">
+                <% if(locals.message) { %>
+                    <%= message %>
+                        <% } %>
+            </p> <br />
+
+            <div>
+                <button>LogIn</button>
+            </div>
+
+            <a href="/signUp">Don't have an account?</a>
+        </form>
+    </div>
+
+    <%- include("partials/footer.ejs") %>

@@ -3,7 +3,7 @@ $("input[type='password']").click(() => {
 });
 
 $(".hi").click(() => {
-  $(".left img").attr("src", "images/welcome.jpg");
+  $(".left img").attr("src", "images/welcome.png");
 });
 
 function validatePasswords() {
@@ -22,16 +22,18 @@ function validatePasswords() {
 }
 
 function renderImg(event) {
-  const file = event.target.files && event.target.files[0];
-  if (!file) {
-    console.warn("No file selected.");
-    return;
-  }
-
-  const reader = new FileReader();
-  reader.onload = () => {
-    $("#outputImg").attr("src", reader.result);
-  };
-
-  reader.readAsDataURL(file);
+  $("#outputImg").attr("src", URL.createObjectURL(event.target.files[0]));
 }
+
+var standard_message = $("#text-area").val();
+$("#text-area").focus(function () {
+  if ($(this).val() == standard_message) $(this).val("");
+});
+$("#text-area").blur(function () {
+  if ($(this).val() == "") $(this).val(standard_message);
+});
+
+const isLoggedIn = false;
+
+
+
