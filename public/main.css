@@ -82,22 +82,22 @@ button:active {
 
 label {
   align-self: flex-start;
-  font-size: smaller;
 }
 
 input {
   color: black;
   width: 220px;
-  border-width: 0px 0px 1px;
+  border: white;
+  border-radius: 2%;
   line-height: 30px;
 }
 
 input:focus {
-  outline: none;
+  border: #3986ff;
 }
 
 form button {
-  background-color: #3a86ff;
+  background-color: #3986ff;
   border: #f8f8e1;
   border-radius: 10%;
   padding: 10px 30px;
@@ -161,8 +161,15 @@ h2 {
   background-color: #faf1e6;
 }
 
+.save-btn {
+  padding: 0;
+  margin: 0;
+  background-color: #faf1e6;
+  border: none;
+}
+
 .btn svg {
-  padding-right: 10px;
+  padding: 10px;
 }
 
 /* create/edit page  */
@@ -188,7 +195,7 @@ h2 {
 }
 
 textarea {
-  height: 250px;
+  height: 200px;
   width: 550px;
   border-width: 0px;
   font-size: 15px;
@@ -209,7 +216,7 @@ textarea:focus {
 /* view-blog  */
 
 .view-blog {
-  background-color:white;
+  background-color: white;
   display: flex;
   flex-direction: column;
   align-items: center;

@@ -4,24 +4,24 @@
 
         <div class="left">
             <h1>Welcome!</h1>
-            <img src="images/welcome.png" height="300px" alt="">
+            <img src="/images/welcome.png" height="300px" alt="">
         </div>
 
 
-        <form onsubmit="return validatePasswords()" action="/submit" method="POST">
+        <form onsubmit="return validatePasswords()" action="/register" method="POST">
             <div class="hi">
-                <label for="imageInp"> <img id="outputImg" src="images/photo.jpg" height="70px" widht="70px"> </label>
+                <label for="imageInp"> <img class="outputImg" src="/images/photo.jpg" height="70px" widht="70px"> </label>
                 <input id="imageInp" type="file" name="profile" accept="image/*" style="display: none;" onchange="renderImg(event)">
             </div>
 
             <div class="hi">
                 <label>Username</label> <br />
-                <input type="text" name="username" placeholder="chinchinati34" required>
+                <input type="text" id="username" name="username" placeholder="chinchinati34" required>
             </div>
 
             <div class="hi">
                 <label>Email</label> <br />
-                <input type="email" name="email" placeholder="user@example.com" required>
+                <input type="email" id="username" name="email" placeholder="user@example.com" required>
             </div>
 
             <div>

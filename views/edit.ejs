@@ -1,0 +1,16 @@
+<%- include("partials/header.ejs") %>
+
+    <div class="create">
+        <form action="/edit/<%= blog.blogId %>" method="post">
+            <input id="title-input" type="text" name="title" value="<%= blog.title %>"> <br>
+            <label for="imageInp"> <img class="outputImg" src=<%=blog.image %> height="200" width="300"> </label>
+            <input id="imageInp" type="file" name="image" accept="image/*" style="display: none;"
+                onchange="renderImg(event)">
+            <br>
+            <textarea name="description"> <%= blog.description %>
+                                        </textarea> <br>
+            <input id="publish_btn" type="submit" value="PUBLISH!">
+        </form>
+    </div>
+
+    <%- include("partials/footer.ejs") %>
