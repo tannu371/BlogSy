@@ -1,17 +1,23 @@
-import express from "express";
+import express from "express"; // handle routes and requests
 import session from "express-session";
-import { dirname } from "path";
-import { fileURLToPath } from "url";
-const __dirname = dirname(fileURLToPath(import.meta.url));
+import multer from "multer"; // middleware to handle file uploads
+import fs from "fs"; // read file data
+import pg from "pg";
 
 const SQLiteStore = (await import("connect-sqlite3")).default(session);
+const upload = multer({ dest: "uploads/" }); // Temp folder
 
-const app = express();
+const app = express(); // create express application
 const port = 3000;
 
-function generateId() {
-  return Math.floor(Math.random() * 100000000000);
-}
+const db = new pg.Client({
+  user: "postgres",
+  host: "localhost",
+  database: "blog",
+  password: "123456",
+  port: 5433,
+});
+db.connect();
 
 app.use(express.static("public"));
 app.use(express.urlencoded({ extended: true }));
@@ -25,72 +31,84 @@ app.use(
   })
 );
 
-var userList = [
-  {
-    userId: 23542454,
-    profileImage: "/images/boy.jpg",
-    username: "chinchinati34",
-    email: "xyz@gmail.com",
-    password: "123",
-    savedBlogIds: [],
-  },
-];
+async function getSaved(username) {
+  const result = await db.query(
+    "SELECT blog_id FROM saved_blog WHERE user_name = $1;",
+    [username]
+  );
+  let saved = [];
+  result.rows.forEach((entry) => {
+    saved.push(entry.blog_id);
+  });
+  return saved;
+}
 
-var blogList = [
-  {
-    blogId: 543225543,
-    blogWriter: "chinchinti34",
-    time: "Fri Jul 18 2025 23:35:27 GMT+1200 (Gilbert Islands Time)",
-    title: "The Art of Curating Your Life: From Chaos to Clarity",
-    image: "/images/1.jpg",
-    description:
-      "Your life is more than a to-do list — it's a personal gallery of moments, priorities, and dreams. In this post, we explore how treating your life like a curated collection can help you gain clarity, focus on what matters, and let go of mental clutter. Start crafting a life that reflects you.",
-  },
-  {
-    blogId: 43543245564,
-    blogWriter: "chinchinati34",
-    time: "Fri Jul 18 2025 23:35:27 GMT+1200 (Gilbert Islands Time)",
-    title: "Inventory Your Joy: 10 Things That Quietly Make You Happy",
-    image: "/images/2.jpg",
-    description:
-      "Happiness doesn’t always come with fireworks. Sometimes, it's in the quiet cup of tea, the sound of rain, or the playlist you forgot you loved. This post helps you discover (and document) your subtle joys — the everyday magic that makes life feel alive.",
-  },
-  {
-    blogId: 43564545342,
-    blogWriter: "chinchinati34",
-    time: "Fri Jul 18 2025 23:35:27 GMT+1200 (Gilbert Islands Time)",
-    title: "Vibrant Routines: How Small Habits Create Big Energy",
-    image: "/images/3.jpg",
-    description:
-      "You don’t need a total life overhaul to feel better — just a few vibrant routines. From 5-minute check-ins to morning light rituals, learn how small, consistent habits can recharge your mind and create momentum that sticks.",
-  },
-  {
-    blogId: 4353543654,
-    blogWriter: "chinchinati34",
-    time: "Fri Jul 18 2025 23:35:27 GMT+1200 (Gilbert Islands Time)",
-    title: "Story Storage: How to Capture the Moments That Matter",
-    image: "/images/4.jpg",
-    description:
-      "Life moves fast, but stories give it meaning. In this post, we share creative ways to capture and organize your experiences — from journaling methods to memory boxes and digital diaries. Make remembering part of your routine.",
-  },
-  {
-    blogId: generateId(),
-    blogWriter: "chinchinati34",
-    time: "Fri Jul 18 2025 23:35:27 GMT+1200 (Gilbert Islands Time)",
-    title: "Declutter Your Digital Life: A Guide to Vibrant Minimalism",
-    image: "/images/5.jpg",
-    description:
-      "Your screen shouldn’t stress you out. Explore a step-by-step guide to declutter your digital world — from inboxes to photo galleries — and create space for calm, creativity, and focus. Vibrant minimalism starts here.",
-  },
-];
-
-// homepage
-app.get("/", (req, res) => {
-  if (req.session.user) {
-    res.render("index.ejs", { user: req.session.user, blogList: blogList });
-  } else {
-    res.render("index.ejs", { blogList: blogList });
+// get homepage
+app.get("/", async (req, res) => {
+  try {
+    const result = await db.query(
+      "SELECT * from blogs ORDER BY post_time DESC"
+    );
+    if (req.session.user) {
+      const username = req.session.user.user_name;
+      const saved = await getSaved(username);
+  
+      res.render("index.ejs", { user: req.session.user, blogs: result.rows, saved : saved });
+    } else {
+      res.render("index.ejs", { blogs: result.rows, saved:[] });
+    }
+  } catch (err) {
+    console.log(err);
+    res.redirect("/");
   }
+});
+
+// blog view
+app.get("/blog/:id", async (req, res) => {
+  try {
+    const result = await db.query("SELECT * from blogs WHERE id = $1", [
+      parseInt(req.params.id),
+    ]);
+    const blog = result.rows[0];
+
+    if (req.session.user) {
+      res.render("blogView.ejs", { user: req.session.user, blog: blog });
+    } else {
+      res.render("blogView.ejs", { blog: blog });
+    }
+  } catch (err) {
+    console.log(err);
+    res.redirect("/");
+  }
+});
+
+// get create page
+app.get("/create", (req, res) => {
+  if (!req.session.user) {
+    return res.redirect("/logIn"); // Redirect if not logged in
+  }
+  res.render("modify.ejs", { user: req.session.user });
+});
+
+// get all saved blogs
+app.get("/saved", async (req, res) => {
+  if (!req.session.user) {
+    return res.redirect("/logIn"); // Redirect if not logged in
+  }
+
+  const username = req.session.user.user_name;
+  const result = await db.query(
+    "SELECT * FROM blogs b JOIN saved_blog sb ON sb.blog_id = b.id WHERE sb.user_name = $1 ORDER BY b.post_time DESC;",
+    [username]
+  );
+
+   const saved = await getSaved(username);
+
+   res.render("index.ejs", {
+     user: req.session.user,
+     blogs: result.rows,
+     saved : saved,
+   });
 });
 
 // get login page
@@ -101,6 +119,238 @@ app.get("/logIn", (req, res) => {
 // get signup page
 app.get("/signUp", (req, res) => {
   res.render("signUp.ejs");
+});
+
+// register/signup
+app.post("/register", upload.single("dp"), async (req, res) => {
+  const { originalname, mimetype, path } = req.file;
+  const fileData = fs.readFileSync(path);
+
+  // Insert into `images` table
+  const imageResult = await db.query(
+    "INSERT INTO images (name, mimetype, data) VALUES ($1, $2, $3) ON CONFLICT(data_hash) DO UPDATE SET name = EXCLUDED.name RETURNING id",
+    [originalname, mimetype, fileData]
+  );
+
+  fs.unlinkSync(path); // remove temp file
+
+  const imageId = imageResult.rows[0].id;
+
+  const username = req.body.username;
+  const email = req.body.email;
+  const password = req.body.password;
+
+  await db.query("INSERT INTO users(user_name, email, password, image_id) values ($1, $2, $3, $4);", [username, email, password, imageId]);
+
+  res.render("logIn.ejs");
+});
+
+// login and redirect to /
+app.post("/", async (req, res) => {
+  try {
+    const { username, password } = req.body;
+    const result = await db.query("SELECT * from users WHERE user_name = $1;", [
+      username,
+    ]);
+
+    if (result.rowCount > 0) {
+      const user = result.rows[0];
+      if (user.password === password) {
+        req.session.user = user;
+        res.redirect("/");
+      } else {
+        res.render("logIn.ejs", { message: "Passwords Incorrect!" });
+      }
+    } else {
+      res.render("logIn.ejs", { message: "Username doesn't exist" });
+    }
+  } catch (err) {
+    console.log(err);
+    res.redirect("/");
+  }
+});
+
+// update profile 
+app.post("/update-profile", upload.single("profile"), async (req, res) => {
+  const { originalname, mimetype, path } = req.file;
+  const fileData = fs.readFileSync(path);
+  const userId = req.session.user.id;
+
+  try {
+    // Insert into `images` table
+    const imageResult = await db.query(
+      "INSERT INTO images (name, mimetype, data) VALUES ($1, $2, $3) ON CONFLICT(data_hash) DO UPDATE SET name = EXCLUDED.name RETURNING id",
+      [originalname, mimetype, fileData]
+    );
+
+    fs.unlinkSync(path); // remove temp file
+
+    const imageId = imageResult.rows[0].id;
+
+    // Update user profile with image reference
+    const updatedUser = await db.query("UPDATE users SET image_id = $1 WHERE id = $2 RETURNING *;", [
+      imageId,
+      userId,
+    ]);
+
+    req.session.user = updatedUser.rows[0];
+
+    res.redirect("/"); // or wherever your user page is
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Failed to upload profile image");
+  }
+});
+
+// render images
+app.get("/image/:id", async (req, res) => {
+  const id = parseInt(req.params.id);
+
+  try {
+    const result = await db.query("SELECT * FROM images WHERE id = $1", [id]);
+
+    if (result.rows.length === 0) {
+      return res.status(404).send("Image not found");
+    }
+
+    const image = result.rows[0];
+    res.set("Content-Type", image.mimetype);
+    res.send(image.data); // image.data is a Buffer
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Server error");
+  }
+});
+
+// get edit box
+app.get("/edit/:id", async (req, res) => {
+  const id = parseInt(req.params.id);
+  try {
+    const result = await db.query("SELECT * from blogs WHERE id = $1;", [id]);
+    const blog = result.rows[0];
+    res.render("modify.ejs", { blog: blog, user: req.session.user });
+  } catch (err) {
+    console.log(err);
+    res.redirect("/");
+  }
+});
+
+// post blog and back to /
+app.post("/post", upload.single("image"), async (req, res) => {
+  const { path, originalname, mimetype } = req.file;
+  const fileData = fs.readFileSync(path);
+
+  const writer = req.session.user.user_name;
+  const title = req.body.title;
+  const description = req.body.description;
+
+  try {
+    const result = await db.query(
+      "INSERT INTO images(name, data, mimetype) values ($1, $2, $3) ON CONFLICT(data_hash) DO UPDATE SET name = EXCLUDED.name RETURNING id;",
+      [originalname, fileData, mimetype]
+    );
+
+    const image_id = result.rows[0].id;
+
+    await db.query(
+      "INSERT INTO blogs (blog_writer, blog_title, blog_description, image_id) VALUES ($1, $2, $3, $4)",
+      [writer, title, description, image_id]
+    );
+    fs.unlinkSync(path); // remove temp file
+    res.redirect("/");
+  } catch (err) {
+    console.log(err);
+    res.redirect("/");
+  }
+});
+
+// update blog post and back to /
+app.post("/update/:id", upload.single("image"), async (req, res) => {
+  const { path, originalname, mimetype } = req.file;
+  const fileData = fs.readFileSync(path);
+
+  const id = parseInt(req.params.id);
+  const time = new Date();
+  const title = req.body.title;
+  const description = req.body.description;
+  try {
+    var result = await db.query("SELECT id FROM images WHERE data = $1", [
+      fileData,
+    ]);
+
+    if (result.rowCount == 0) {
+      result = await db.query(
+        "INSERT INTO images(name, data, mimetype) values ($1, $2, $3) RETURNING id;",
+        [originalname, fileData, mimetype]
+      );
+    }
+    const image_id = result.rows[0].id;
+
+    await db.query(
+      "UPDATE blogs SET post_time = $1, blog_title = $2, blog_description = $3, image_id = $4 WHERE id = $5;",
+      [time, title, description, image_id, id]
+    );
+
+    fs.unlinkSync(path); // remove temp file
+    res.redirect("/");
+  } catch (err) {
+    console.log(err);
+    res.redirect("/");
+  }
+});
+
+// get user created blogs
+app.get("/myPosts", async (req, res) => {
+  try {
+    const username = req.session.user.user_name;
+    const result = await db.query(
+      "SELECT * FROM blogs WHERE blog_writer = $1;",
+      [username]
+    );
+
+    const saved = await getSaved(username);
+
+    res.render("index.ejs", {
+      user: req.session.user,
+      blogs: result.rows,
+      saved : saved,
+    });
+  } catch (err) {
+    console.log(err);
+    res.redirect('/');
+  }
+});
+
+// delete blog
+app.post("/delete", async (req, res) => {
+  const blogId = parseInt(req.body.id);
+  await db.query("DELETE FROM blogs WHERE id = $1;", [blogId]);
+  res.redirect("/");
+});
+
+// toggle save
+app.post("/save", async (req, res) => {
+  const username = req.session.user.user_name;
+  const blogId = parseInt(req.body.id);
+
+  const result = await db.query(
+    "SELECT * FROM saved_blog WHERE blog_id = $1 AND user_name = $2;",
+    [blogId, username]
+  );
+
+  if (result.rowCount > 0) {
+    await db.query(
+      "DELETE FROM saved_blog WHERE blog_id = $1 AND user_name = $2;",
+      [blogId, username]
+    );
+  } else {
+    await db.query(
+      "INSERT INTO saved_blog(blog_id, user_name) VALUES ($1, $2);",
+      [blogId, username]
+    );
+  }
+
+  res.redirect("/");
 });
 
 // logout and redirect to /
@@ -114,147 +364,6 @@ app.get("/logout", (req, res) => {
       res.redirect("/");
     }
   });
-});
-
-// blog view
-app.get("/blog/:blogId", (req, res) => {
-  const blog = blogList.find(
-    (blog) => blog.blogId === parseInt(req.params.blogId)
-  );
-  if (req.session.user) {
-    res.render("blogView.ejs", { user: req.session.user, blog: blog });
-  } else {
-    res.render("blogView.ejs", { blog: blog });
-  }
-});
-
-// register/signup
-app.post("/register", (req, res) => {
-  const user = {
-    userId: generateId(),
-    profileImage: req.body["profile"],
-    username: req.body["username"],
-    email: req.body["email"],
-    password: req.body["password"],
-    savedBlogIds: [],
-  };
-  userList.push(user);
-
-  res.render("logIn.ejs");
-});
-
-// login and redirect to /
-app.post("/", (req, res) => {
-  const { username, password } = req.body;
-  const user = userList.find((user) => user.username == username);
-
-  if (user) {
-    if (user.password === password) {
-      req.session.user = user;
-      res.redirect("/");
-    } else {
-      res.render("logIn.ejs", { message: "Passwords Incorrect!" });
-    }
-  } else {
-    res.render("logIn.ejs", { message: "Username doesn't exist" });
-  }
-});
-
-// get my blogs
-app.get("/:username", (req, res) => {
-  const username = req.params.username;
-  const user = userList.find((user) => user.username === username);
-  const userBlogList = blogList.filter((blog) => blog.blogWriter === username);
-
-  res.render("index.ejs", { user: user, blogList: userBlogList });
-});
-
-// get create page
-app.get("/create/:userId", (req, res) => {
-  const user = userList.find(
-    (user) => user.userId === parseInt(req.params.userId)
-  );
-  res.render("create.ejs", { user: user });
-});
-
-// handle create data and back to /
-app.post("/create/:userId", (req, res) => {
-  const user = userList.find(
-    (user) => user.userId === parseInt(req.params.userId)
-  );
-  const blog = {
-    blogId: generateId(),
-    blogWriter: user.username,
-    time: new Date(),
-    title: req.body["title"],
-    image: req.body["image"],
-    description: req.body["description"],
-  };
-  blogList.unshift(blog);
-  res.redirect("/");
-});
-
-// get edit box
-app.get("/edit/:blogId", (req, res) => {
-  const blog = blogList.find(
-    (blog) => blog.blogId === parseInt(req.params.blogId)
-  );
-  const user = userList.find((user) => user.username === blog.blogWriter);
-  console.log(blog);
-  res.render("edit.ejs", { blog: blog, user: user });
-});
-
-// post edited blog
-app.post("/edit/:blogId", (req, res) => {
-  const blogIndex = blogList.findIndex(
-    (blog) => blog.blogId === parseInt(req.params.blogId)
-  );
-  blogList[blogIndex].title = req.body["title"];
-  blogList[blogIndex].image = req.body["image"];
-  blogList[blogIndex].description = req.body["description"];
-  res.redirect("/");
-});
-
-// delete blog
-app.post("/delete/:blogId", (req, res) => {
-  const blogIndex = blogList.findIndex(
-    (blog) => blog.blogId === parseInt(req.params.blogId)
-  );
-  blogList.splice(blogIndex, 1);
-  res.redirect("/");
-});
-
-// get all saved blogs
-app.get("/saved/:userId", (req, res) => {
-  const user = userList.find(
-    (user) => user.userId === parseInt(req.params.userId)
-  );
-  const savedBlogList = user.savedBlogIds.map((blogId) =>
-    blogList.find((blog) => blog.blogId === blogId)
-  );
-  console.log(savedBlogList);
-  res.render("index.ejs", { user: user, blogList: savedBlogList });
-});
-
-app.post("/save/:userId/:blogId", (req, res) => {
-  const blogId = parseInt(req.params.blogId);
-  const userIndex = userList.findIndex(
-    (user) => user.userId === parseInt(req.params.userId)
-  );
-  const user = userList[userIndex];
-  const savedBlogIds = userList[userIndex].savedBlogIds;
-
-  // toggle save
-  if (savedBlogIds !== null) {
-    if (!savedBlogIds.includes(blogId)) {
-      userList[userIndex].savedBlogIds.unshift(blogId);
-    } else {
-      const blogIdIndex = savedBlogIds.findIndex((id) => id === blogId);
-      userList[userIndex].savedBlogIds.splice(blogIdIndex, 1);
-    }
-  }
-
-  res.redirect("/");
 });
 
 app.listen(port, () => {

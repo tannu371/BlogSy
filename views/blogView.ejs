@@ -1,15 +1,13 @@
 <%- include("partials/header.ejs") %>
-    <div class="view-blog">
+    <div class="blog-view">
         <h2>
-            <%= blog.title %>
+            <%= blog.blog_title %>
         </h2>
-        <p style="color:grey"> <%= blog.time %></p>      
+        <p style="color:grey"> <%= blog.post_time %></p>      
+        <p> By:&nbsp <%= blog.blog_writer %> </p>
+        <img src=/image/<%= blog.image_id %> width="300px">
         <p>
-            <%= blog.blogWriter %>
-        </p>
-        <img src=<%= blog.image %> height="200px" width="300px">
-        <p>
-            <%= blog.description %>
+            <%= blog.blog_description %>
         </p>
     </div>
     <%- include("partials/footer.ejs") %>
